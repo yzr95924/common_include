@@ -30,7 +30,7 @@ typedef struct {
  *********************************************
  */
 
-ZUORU_HashTblIntItem** ZUORU_InitIntHashTbl()
+static ZUORU_HashTblIntItem** ZUORU_InitIntHashTbl()
 {
     ZUORU_HashTblIntItem **hashTblPtr = (ZUORU_HashTblIntItem**)calloc(1,
         sizeof(ZUORU_HashTblIntItem*));
@@ -38,7 +38,7 @@ ZUORU_HashTblIntItem** ZUORU_InitIntHashTbl()
     return hashTblPtr;
 }
 
-ZUORU_HashTblIntItem* ZUORU_InsertIntHashTbl(ZUORU_HashTblIntItem **hashTblPtr,
+static ZUORU_HashTblIntItem* ZUORU_InsertIntHashTbl(ZUORU_HashTblIntItem **hashTblPtr,
     int key, ZUORU_HashData *inVal)
 {
     ZUORU_HashTblIntItem *tmpHashItem;
@@ -53,8 +53,8 @@ ZUORU_HashTblIntItem* ZUORU_InsertIntHashTbl(ZUORU_HashTblIntItem **hashTblPtr,
     return tmpHashItem;
 }
 
-bool ZUORU_FindIntHashTbl(ZUORU_HashTblIntItem **hashTblPtr, int key,
-    ZUORU_HashTblIntItem **ret)
+static bool ZUORU_FindIntHashTbl(ZUORU_HashTblIntItem **hashTblPtr,
+    int key, ZUORU_HashTblIntItem **ret)
 {
     ZUORU_HashTblIntItem *tmpHashItem = NULL;
     HASH_FIND_INT(*hashTblPtr, &key, tmpHashItem);
@@ -67,7 +67,7 @@ bool ZUORU_FindIntHashTbl(ZUORU_HashTblIntItem **hashTblPtr, int key,
     return true;
 }
 
-void ZUORU_DelIntHashTbl(ZUORU_HashTblIntItem **hashTblPtr,
+static void ZUORU_DelIntHashTbl(ZUORU_HashTblIntItem **hashTblPtr,
     ZUORU_HashTblIntItem *hashItem)
 {
     HASH_DEL(*hashTblPtr, hashItem);
@@ -75,7 +75,7 @@ void ZUORU_DelIntHashTbl(ZUORU_HashTblIntItem **hashTblPtr,
     return;
 }
 
-void ZUORU_FreeIntHashTbl(ZUORU_HashTblIntItem **hashTblPtr)
+static void ZUORU_FreeIntHashTbl(ZUORU_HashTblIntItem **hashTblPtr)
 {
     ZUORU_HashTblIntItem *curItem;
     ZUORU_HashTblIntItem *tmpItem;
@@ -100,7 +100,7 @@ typedef struct {
     UT_hash_handle hh;
 } ZUORU_HashTblPtrItem;
 
-ZUORU_HashTblPtrItem** ZUORU_InitPtrHashTbl()
+static ZUORU_HashTblPtrItem** ZUORU_InitPtrHashTbl()
 {
     ZUORU_HashTblPtrItem **hashTblPtr = (ZUORU_HashTblPtrItem**)calloc(1,
         sizeof(ZUORU_HashTblPtrItem*));
@@ -108,8 +108,8 @@ ZUORU_HashTblPtrItem** ZUORU_InitPtrHashTbl()
     return hashTblPtr;
 }
 
-void ZUORU_InsertPtrHashTbl(ZUORU_HashTblPtrItem **hashTblPtr, void *key,
-    ZUORU_HashData *inVal)
+static void ZUORU_InsertPtrHashTbl(ZUORU_HashTblPtrItem **hashTblPtr,
+    void *key, ZUORU_HashData *inVal)
 {
     ZUORU_HashTblPtrItem *tmpHashItem = NULL;
     HASH_FIND_PTR(*hashTblPtr, &key, tmpHashItem);
@@ -122,8 +122,8 @@ void ZUORU_InsertPtrHashTbl(ZUORU_HashTblPtrItem **hashTblPtr, void *key,
     return;
 }
 
-bool ZUORU_FindPtrHashTbl(ZUORU_HashTblPtrItem **hashTblPtr, void *key,
-    ZUORU_HashTblPtrItem **ret)
+static bool ZUORU_FindPtrHashTbl(ZUORU_HashTblPtrItem **hashTblPtr,
+    void *key, ZUORU_HashTblPtrItem **ret)
 {
     ZUORU_HashTblPtrItem *tmpHashItem = NULL;
     HASH_FIND_PTR(*hashTblPtr, &key, tmpHashItem);
@@ -136,7 +136,7 @@ bool ZUORU_FindPtrHashTbl(ZUORU_HashTblPtrItem **hashTblPtr, void *key,
     return true;
 }
 
-void ZUORU_DelPtrHashTbl(ZUORU_HashTblPtrItem **hashTblPtr,
+static void ZUORU_DelPtrHashTbl(ZUORU_HashTblPtrItem **hashTblPtr,
     ZUORU_HashTblPtrItem *hashItem)
 {
     HASH_DEL(*hashTblPtr, hashItem);
@@ -144,7 +144,7 @@ void ZUORU_DelPtrHashTbl(ZUORU_HashTblPtrItem **hashTblPtr,
     return;
 }
 
-void ZUORU_FreePtrHashTbl(ZUORU_HashTblPtrItem **hashTblPtr)
+static void ZUORU_FreePtrHashTbl(ZUORU_HashTblPtrItem **hashTblPtr)
 {
     ZUORU_HashTblPtrItem *curItem;
     ZUORU_HashTblPtrItem *tmpItem;
@@ -171,7 +171,7 @@ typedef struct {
     UT_hash_handle hh;
 } ZUORU_HashTblStrItem;
 
-ZUORU_HashTblStrItem** ZUORU_InitStrHashTbl()
+static ZUORU_HashTblStrItem** ZUORU_InitStrHashTbl()
 {
     ZUORU_HashTblStrItem **hashTblPtr = (ZUORU_HashTblStrItem**)calloc(1,
         sizeof(ZUORU_HashTblStrItem*));
@@ -179,8 +179,8 @@ ZUORU_HashTblStrItem** ZUORU_InitStrHashTbl()
     return hashTblPtr;
 }
 
-void ZUORU_InsertStrHashTbl(ZUORU_HashTblStrItem **hashTblPtr, const char *key,
-    ZUORU_HashData *inVal)
+static void ZUORU_InsertStrHashTbl(ZUORU_HashTblStrItem **hashTblPtr,
+    const char *key, ZUORU_HashData *inVal)
 {
     ZUORU_HashTblStrItem *tmpHashItem = NULL;
     HASH_FIND_STR(*hashTblPtr, key, tmpHashItem);
@@ -193,8 +193,8 @@ void ZUORU_InsertStrHashTbl(ZUORU_HashTblStrItem **hashTblPtr, const char *key,
     return;
 }
 
-bool ZUORU_FindStrHashTbl(ZUORU_HashTblStrItem **hashTblPtr, const char *key,
-    ZUORU_HashTblStrItem **ret)
+static bool ZUORU_FindStrHashTbl(ZUORU_HashTblStrItem **hashTblPtr,
+    const char *key, ZUORU_HashTblStrItem **ret)
 {
     ZUORU_HashTblStrItem *tmpHashItem = NULL;
     HASH_FIND_STR(*hashTblPtr, key, tmpHashItem);
@@ -207,7 +207,7 @@ bool ZUORU_FindStrHashTbl(ZUORU_HashTblStrItem **hashTblPtr, const char *key,
     return true;
 }
 
-void ZUORU_DelStrHashTbl(ZUORU_HashTblStrItem **hashTblPtr,
+static void ZUORU_DelStrHashTbl(ZUORU_HashTblStrItem **hashTblPtr,
     ZUORU_HashTblStrItem *hashItem)
 {
     HASH_DEL(*hashTblPtr, hashItem);
@@ -215,7 +215,7 @@ void ZUORU_DelStrHashTbl(ZUORU_HashTblStrItem **hashTblPtr,
     return;
 }
 
-void ZUORU_FreeStrHashTbl(ZUORU_HashTblStrItem **hashTblPtr)
+static void ZUORU_FreeStrHashTbl(ZUORU_HashTblStrItem **hashTblPtr)
 {
     ZUORU_HashTblStrItem *curItem;
     ZUORU_HashTblStrItem *tmpItem;
