@@ -20,6 +20,15 @@
 
 #include "define_const.h"
 
+static inline uint32_t ZUORU_DivCeil(uint32_t a, uint32_t b)
+{
+    uint32_t ret = a / b;
+    if (a % b) {
+        return ret + 1;
+    }
+    return ret;
+}
+
 static inline double ZUORU_GetTimeDiff(struct timeval start_time, struct timeval end_time)
 {
     double total_sec = 0;
