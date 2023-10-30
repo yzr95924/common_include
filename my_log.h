@@ -38,8 +38,8 @@ typedef enum {
 #define INFO_LOG_TAG "INFO"
 #define DEBUG_LOG_TAG "DEBUG"
 
-#define ZUORU_LOGGING(log_type, log_module, message, args...) \
-    Logging(log_type, log_module, _FILE, __LINE__, __FUNCTION__, \
+#define ZUORU_LOGGING(log_type, message, args...) \
+    Logging(log_type, MODULE_ID, _FILE, __LINE__, __FUNCTION__, \
     message, ##args);
 
 static inline void TimeNow(char *input_buf)
