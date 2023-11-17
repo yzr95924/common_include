@@ -87,6 +87,23 @@ static bool VectorDel(Vector *vector, int key)
     return false;
 }
 
+static bool VectorInsert(Vector *vector, VectorDataItem *inItem, int pos)
+{
+    int copyLen = 0;
+    if (pos < 0 || pos >= vector->size) {
+        return false;
+    }
+    if (vector->size == vector->capacity) {
+        vector->capacity *= 2;
+        vector->data = realloc(vector->data, vector->capacity * sizeof(VectorDataItem));
+    }
+    copyLen = (vector->size - 1) - pos + 1;
+    memmove(vector->data + pos + 1, vector->data + pos, copyLen * sizeof(VectorDataItem));
+    memcpy(vector->data + pos, inItem, sizeof(VectorDataItem));
+    vector->size++;
+    return true;
+}
+
 static int VectorCmpFuncKeyValue(const void *rawItem1, const void *rawItem2)
 {
     VectorDataItem *item1 = (VectorDataItem*)rawItem1;
