@@ -246,10 +246,10 @@ class MyLog():
 
         if self._ml_stderr_color is None:
             self._ml_stderr_color = self._ml_sys_stderr.isatty()
-        colorful = self._ml_stderr_color
 
         if self._ml_stdout_color is None:
             self._ml_stdout_color = self._ml_sys_stdout.isatty()
+        colorful = self._ml_stderr_color or self._ml_stdout_color
 
         # check console_formatter
         if console_fmt == _G_FMT_QUIET:
