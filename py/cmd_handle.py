@@ -9,7 +9,7 @@ import io
 import subprocess
 import select
 
-from my_py_lib import util
+from py import util
 
 _G_SHELL_LANG_OPTION = "LANG=en_US.UTF-8 "
 
