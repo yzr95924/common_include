@@ -191,7 +191,7 @@ class MyLog():
         condition=None, stdout_color=None, stderr_color=None, remember_records=False,
         stdout=None, stderr=None):
         self._ml_name = name # log name
-        self._ml_result = cmd_handle.CmdResult()
+        self._ml_result = cmd_handle.CommandResult()
         self.ml_result_dir = result_dir # result file stored in the dir
         self.ml_console_fmt = console_fmt # log format
         self._ml_logger: logging.Logger = None # the logger used inside

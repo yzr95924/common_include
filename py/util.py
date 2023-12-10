@@ -11,6 +11,8 @@ import getpass
 import os
 import signal
 import time
+import threading
+import errno
 
 def get_local_strftime(utc_datetime, fmt):
     """
@@ -95,4 +97,40 @@ def kill_subprocess(cur_process: subprocess.Popen):
         send_signal_to_pid(cur_process.pid, sig)
         if cur_process.poll() is not None:
             return cur_process.poll()
+    return 0
+
+def is_valid_ipv4_address(address: str):
+    """
+    check whether the address is valid ipv4 address
+    """
+    try:
+        socket.inet_pton(socket.AF_INET, address)
+    except AttributeError: # no inet_pton here
+        try:
+            socket.inet_aton(address)
+        except socket.error:
+            return False
+        return address.count(".") == 3
+    except socket.error: # not a valid address here
+        return False
+    return True
+
+def background_thread_start(target, args):
+    """
+    wrap the target function and start a thread to run it
+    """
+    run_thread = threading.Thread(target=target, args=args)
+    run_thread.setDaemon(True)
+    run_thread.start()
+    return run_thread
+
+def mkdir_wo_existing_err(dirname):
+    """
+    create directory without existing error
+    """
+    try:
+        os.mkdir(dirname)
+    except OSError as exc:
+        if exc.errno != errno.EEXIST:
+            return exc.errno
     return 0
