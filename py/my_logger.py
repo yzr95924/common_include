@@ -42,7 +42,7 @@ def get_logger(name: str, level=G_LOG_LEVEL_DEBUG, is_persist: bool=False,
     ret_logger.addHandler(colored_handler)
 
     if (is_persist):
-        file_handler = logging.FileHandler(name + ".log")
+        file_handler = logging.FileHandler(name + ".log", encoding="utf-8", mode="w")
         file_handler.setLevel(log_file_level)
         file_handler.setFormatter(logging.Formatter(_G_FMT_FULL))
         ret_logger.addHandler(file_handler)
