@@ -218,3 +218,5 @@ cython_debug/
 #
 
 *.log
+
+*__pycache__*
