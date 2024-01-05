@@ -10,7 +10,7 @@ class CmdHandler():
     def __init__(self, handler_name: str="cmd",
                     log_level=my_logger.G_LOG_LEVEL_DEBUG):
         self._handler_name = handler_name
-        self.logger = my_logger.get_logger(name=handler_name,
+        self.logger = my_logger.get_logger(name=handler_name + "_cmd",
                                         log_file_level=my_logger.G_LOG_LEVEL_DEBUG,
                                         is_persist=True)
 
@@ -31,4 +31,4 @@ class CmdHandler():
                                 "ret: %d" % (util.Color.set_text(cmd, util.Color.BLUE),
                                 error_output.decode("utf-8"),
                                 process.returncode))
-        return process.returncode
+        return output.decode("utf-8"), error_output.decode("utf-8"), process.returncode

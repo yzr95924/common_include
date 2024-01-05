@@ -5,7 +5,9 @@ import os
 import logging
 from logging import handlers as logging_handler
 
-_G_FMT_FULL = ("[%(asctime)s][%(levelname)s][%(filename)s:%(lineno)s:%(funcName)s] %(message)s")
+_G_FMT_FULL = ("[%(asctime)s][%(levelname)s]"
+                "[%(filename)s:%(lineno)s:%(funcName)s]"
+                "[%(name)s] %(message)s")
 
 G_LOG_LEVEL_INFO = logging.INFO
 G_LOG_LEVEL_ERROR = logging.ERROR
