@@ -27,17 +27,20 @@ _G_PLATFORM_CMD = my_cmd_handler.CmdHandler(handler_name=_G_PLATFORM_MOD_NAME)
 def get_current_os_release():
     cmd = "cat /etc/os-release"
     output, error_output, returncode = _G_PLATFORM_CMD.run_shell(cmd=cmd)
+    os_info = {}
 
     if returncode == 0:
         lines = output.splitlines()
         for line in lines:
-            line = line.replace("\"", "")
+            line = line.replace("\"", "").replace(" ", "")
             if line.find("=") == -1:
                 continue
             else:
                 for attr in _G_MY_PLATFORM_KEYWORD:
                     if attr == line[:line.find("=")]:
-                        print(attr)
-
+                        os_info[attr] = line[line.find("=") + 1:]
     else:
+        _G_PLATFORM_LOGGER.error("get current os release failed: %s" % error_output)
         return None
+
+    return os_info

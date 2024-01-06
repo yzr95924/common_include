@@ -34,4 +34,5 @@ if __name__ == "__main__":
     print("release os: %s" % release_os["ID"])
     print(uname_os)
 
-    my_os_util.get_current_os_release()
+    os_info = my_os_util.get_current_os_release()
+    print(os_info)
