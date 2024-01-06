@@ -1,5 +1,6 @@
 '''
 native os-related util
+@aut
 '''
 
 import platform
@@ -25,6 +26,14 @@ _G_PLATFORM_LOGGER = my_logger.get_logger(name=_G_PLATFORM_MOD_NAME,
 _G_PLATFORM_CMD = my_cmd_handler.CmdHandler(handler_name=_G_PLATFORM_MOD_NAME)
 
 def get_current_os_release():
+    '''
+    get os release info
+
+    Args:
+        None
+    Returns:
+        dict mapping attr --> info
+    '''
     cmd = "cat /etc/os-release"
     output, error_output, returncode = _G_PLATFORM_CMD.run_shell(cmd=cmd)
     os_info = {}
