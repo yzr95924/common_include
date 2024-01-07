@@ -1,10 +1,10 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import sys
-sys.path.append(".") # if "py module" not in current dir
-
-from py import *
+from py import my_logger
+from py import my_cmd_handler
+from py import util
+from py import my_os_util
 
 import platform
 
