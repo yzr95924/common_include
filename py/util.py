@@ -29,13 +29,6 @@ class Color:
     def set_text(message: str, color_opt: str):
         return ("%s%s%s" % (color_opt, message, Color.RESET))
 
-
-def get_local_strftime(utc_datetime, fmt):
-    """
-    get local time in str format
-    """
-    pass
-
 def get_current_utc_time():
     """
     get current UTC time with the time zone info
