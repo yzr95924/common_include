@@ -92,3 +92,19 @@ def translate_linux_err_code(err_code: int):
         return os.strerror(err_code)
     else:
         return "not standard linux err code: {}".format(err_code)
+
+def log_error_with_ret(logger: my_logger.logging.Logger, err_info: str, ret: int):
+    '''
+    error log with return code and info
+
+    Args:
+        logger: my logger
+        err_info: err string
+        ret: return code
+
+    Returns:
+        None
+    '''
+    logger.error("{}: {}:{}".format(err_info,
+                                    ret,
+                                    translate_linux_err_code(ret)))

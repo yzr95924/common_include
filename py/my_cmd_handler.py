@@ -85,13 +85,10 @@ class CmdHandler():
                 self.logger.info("run successful: {}".format(
                     util.Color.set_text(cmd, util.Color.BLUE)))
         else:
-            if is_debug:
-                self.logger.error("run failed: {}\nerror: {}\nret: {}".format(
-                    util.Color.set_text(cmd, util.Color.BLUE),
-                    error_output.decode("utf-8"),
-                    process.returncode))
-            else:
-                self.logger.error("run failed: {}".format(
-                    util.Color.set_text(cmd, util.Color.BLUE)))
+            # if error, print the error info
+            self.logger.error("run failed: {}\nerror: {}\nret: {}".format(
+                util.Color.set_text(cmd, util.Color.BLUE),
+                error_output.decode("utf-8"),
+                process.returncode))
 
         return output.decode("utf-8"), error_output.decode("utf-8"), process.returncode
