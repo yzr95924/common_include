@@ -4,14 +4,14 @@
 import subprocess
 import time
 
-from py import my_logger
-from py import util
+from my_py import logger
+from my_py import common_tool
 
 class CmdHandler():
     def __init__(self, handler_name: str="cmd",
-                    log_level=my_logger.G_LOG_LEVEL_DEBUG, is_persist=False):
+                    log_level=logger.G_LOG_LEVEL_DEBUG, is_persist=False):
         self._handler_name = handler_name
-        self.logger = my_logger.get_logger(name=handler_name + "_cmd",
+        self.logger = logger.get_logger(name=handler_name + "_cmd",
                                         log_file_level=log_level,
                                         is_persist=is_persist)
     def print_stdout_line(self, process: subprocess.Popen):
@@ -49,7 +49,8 @@ class CmdHandler():
                 return code of the cmd
         '''
         if is_dry_run:
-            self.logger.info("DRY_RUN: %s" % cmd)
+            self.logger.info("DRY_RUN: {}".format(
+                common_tool.Color.set_text(cmd, common_tool.Color.BLUE)))
             return None, None, 0
 
         if timeout < 0:
@@ -57,7 +58,7 @@ class CmdHandler():
             return None, None, -1
 
         self.logger.info("run cmd: {}".format(
-            util.Color.set_text(cmd, util.Color.BLUE)))
+            common_tool.Color.set_text(cmd, common_tool.Color.BLUE)))
         process = subprocess.Popen(cmd, shell=True,
                                     stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE)
@@ -77,17 +78,17 @@ class CmdHandler():
         # check return code
         output, error_output = process.communicate()
         if process.returncode == 0:
-            if is_debug:
+            if (is_debug and len(output.decode("utf-8")) != 0):
                 self.logger.info("run successful: {}\noutput: {}".format(
-                    util.Color.set_text(cmd, util.Color.BLUE),
+                    common_tool.Color.set_text(cmd, common_tool.Color.BLUE),
                     output.decode("utf-8")))
             else:
                 self.logger.info("run successful: {}".format(
-                    util.Color.set_text(cmd, util.Color.BLUE)))
+                    common_tool.Color.set_text(cmd, common_tool.Color.BLUE)))
         else:
             # if error, print the error info
             self.logger.error("run failed: {}\nerror: {}\nret: {}".format(
-                util.Color.set_text(cmd, util.Color.BLUE),
+                common_tool.Color.set_text(cmd, common_tool.Color.BLUE),
                 error_output.decode("utf-8"),
                 process.returncode))
 
