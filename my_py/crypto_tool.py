@@ -41,31 +41,16 @@ class AESCipher:
             return errno.EEXIST
 
         ret = 0
-        tmp_key_file_path = os.path.join(_g_tmp_path, os.path.basename(in_file_path) + ".tmp")
-        ret = os_util.FS.write_str_to_file(input_data=key_data.decode(),
-                                           file_path=tmp_key_file_path,
-                                           is_append=False)
-        if (ret != 0):
-            _g_logger.error("write tmp key file failed: {}".format(
-                os_util.translate_linux_err_code(ret)))
-            return ret
-
         cmd = "openssl enc -aes-256-cbc" + " " + "-salt" + " " + \
             "-in" + " " + in_file_path + " " + \
             "-out" + " " + out_file_path + " " + \
-            "-pass" + " " + "file:" + tmp_key_file_path
+            "-k" + " " + key_data.decode()
         _, _, ret = _g_cmd_handler.run_shell(cmd=cmd,
                                        is_dry_run=_g_is_dry_run,
                                        is_debug=_g_is_debug)
         if (ret != 0):
             _g_logger.error("enc file ({}) failed: {}".format(
                 in_file_path, os_util.translate_linux_err_code(ret)))
-            return ret
-
-        ret = os_util.FS.rm_file(tmp_key_file_path)
-        if (ret != 0):
-            _g_logger.error("remove tmp key file failed: {}".format(
-                os_util.translate_linux_err_code(ret)))
             return ret
         return 0
 
@@ -77,30 +62,15 @@ class AESCipher:
             return errno.EEXIST
 
         ret = 0
-        tmp_key_file_path = os.path.join(_g_tmp_path, os.path.basename(in_file_path) + ".tmp")
-        ret = os_util.FS.write_str_to_file(input_data=key_data.decode(),
-                                           file_path=tmp_key_file_path,
-                                           is_append=False)
-        if (ret != 0):
-            _g_logger.error("write tmp key file failed: {}".format(
-                os_util.translate_linux_err_code(ret)))
-            return ret
-
         cmd = "openssl enc -aes-256-cbc" + " " + "-d" + " " + \
             "-in" + " " + in_file_path + " " + \
             "-out" + " " + out_file_path + " " + \
-            "-pass" + " " + "file:" + tmp_key_file_path
+            "-k" + " " + key_data.decode()
         _, _, ret = _g_cmd_handler.run_shell(cmd=cmd,
                                        is_dry_run=_g_is_dry_run,
                                        is_debug=_g_is_debug)
         if (ret != 0):
             _g_logger.error("dec file ({}) failed: {}".format(
                 in_file_path, os_util.translate_linux_err_code(ret)))
-            return ret
-
-        ret = os_util.FS.rm_file(tmp_key_file_path)
-        if (ret != 0):
-            _g_logger.error("remove tmp key file failed: {}".format(
-                os_util.translate_linux_err_code(ret)))
             return ret
         return 0
