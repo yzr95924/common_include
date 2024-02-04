@@ -107,7 +107,14 @@ class FS:
         _, _, ret = _g_cmd_handler.run_shell(cmd=cmd,
                                              is_dry_run=_g_is_dry_run,
                                              is_debug=_g_is_debug)
+        return ret
 
+    def mkdir_p(path: str):
+        cmd = "mkdir -p" + " " + path
+        _, _, ret = _g_cmd_handler.run_shell(cmd=cmd,
+                                             is_dry_run=_g_is_dry_run,
+                                             is_debug=_g_is_debug)
+        return ret
 
     def change_file_mode(file_path: str, mode: str):
         '''
