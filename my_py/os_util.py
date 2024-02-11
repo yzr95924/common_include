@@ -98,7 +98,6 @@ class FS:
         else:
             return False
 
-
     def delete_file_if_exist(path: str):
         if (not os.path.exists(path)):
             return 0
@@ -136,7 +135,6 @@ class FS:
             return ret
         return ret
 
-
     def rm_file(file_path: str):
         cmd = "rm" + " " + file_path
         _, _, ret = _g_cmd_handler.run_shell(cmd=cmd,
@@ -149,7 +147,6 @@ class FS:
             ))
             return ret
         return ret
-
 
     def write_str_to_file(input_data: str, file_path: str, is_append: bool):
         ret = 0

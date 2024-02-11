@@ -1,19 +1,18 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import os
 import logging
-from logging import handlers as logging_handler
 
 _G_FMT_FULL = ("[%(asctime)s][%(levelname)s]"
-                "[%(filename)s:%(lineno)s:%(funcName)s]"
-                "[%(name)s] %(message)s")
+               "[%(filename)s:%(lineno)s:%(funcName)s]"
+               "[%(name)s] %(message)s")
 
 G_LOG_LEVEL_INFO = logging.INFO
 G_LOG_LEVEL_ERROR = logging.ERROR
 G_LOG_LEVEL_WARNING = logging.WARNING
 G_LOG_LEVEL_DEBUG = logging.DEBUG
 G_LOG_LEVEL_CRITICAL = logging.CRITICAL
+
 
 class ColorHandler(logging.StreamHandler):
     def __init__(self):
@@ -35,8 +34,9 @@ class ColorHandler(logging.StreamHandler):
         record.levelname = colored_levelname
         return super().format(record)
 
-def get_logger(name: str, level=G_LOG_LEVEL_DEBUG, is_persist: bool=False,
-                log_file_level=G_LOG_LEVEL_DEBUG):
+
+def get_logger(name: str, level=G_LOG_LEVEL_DEBUG, is_persist: bool = False,
+               log_file_level=G_LOG_LEVEL_DEBUG):
     ret_logger = logging.getLogger(name=name)
     ret_logger.setLevel(level=level)
     colored_handler = ColorHandler()

@@ -10,7 +10,6 @@ from my_py import os_util
 
 import errno
 import hashlib
-import os
 
 _g_mod_name = "crypto_tool"
 _g_is_dry_run = False
@@ -20,6 +19,7 @@ _g_logger = logger.get_logger(name=_g_mod_name)
 _g_cmd_handler = cmd_handler.CmdHandler(handler_name=_g_mod_name)
 
 _g_tmp_path = "/tmp"
+
 
 class Hasher:
     '''
@@ -46,14 +46,13 @@ class AESCipher:
             "-out" + " " + out_file_path + " " + \
             "-k" + " " + key_data.decode()
         _, _, ret = _g_cmd_handler.run_shell(cmd=cmd,
-                                       is_dry_run=_g_is_dry_run,
-                                       is_debug=_g_is_debug)
+                                             is_dry_run=_g_is_dry_run,
+                                             is_debug=_g_is_debug)
         if (ret != 0):
             _g_logger.error("enc file ({}) failed: {}".format(
                 in_file_path, os_util.translate_linux_err_code(ret)))
             return ret
         return 0
-
 
     def decrypt_with_key(in_file_path: str, key_data: bytes, out_file_path: str):
         _g_logger.info("decrypt file: {}".format(in_file_path))
@@ -67,8 +66,8 @@ class AESCipher:
             "-out" + " " + out_file_path + " " + \
             "-k" + " " + key_data.decode()
         _, _, ret = _g_cmd_handler.run_shell(cmd=cmd,
-                                       is_dry_run=_g_is_dry_run,
-                                       is_debug=_g_is_debug)
+                                             is_dry_run=_g_is_dry_run,
+                                             is_debug=_g_is_debug)
         if (ret != 0):
             _g_logger.error("dec file ({}) failed: {}".format(
                 in_file_path, os_util.translate_linux_err_code(ret)))

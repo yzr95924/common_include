@@ -12,6 +12,7 @@ _g_logger = logger.get_logger(name=_g_mod_name)
 _g_is_dry_run = False
 _g_is_debug = False
 
+
 class Color:
     # 字符串颜色
     BLACK = '\033[30m'

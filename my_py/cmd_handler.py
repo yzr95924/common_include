@@ -7,13 +7,15 @@ import time
 from my_py import logger
 from my_py import common_tool
 
+
 class CmdHandler():
-    def __init__(self, handler_name: str="cmd",
-                    log_level=logger.G_LOG_LEVEL_DEBUG, is_persist=False):
+    def __init__(self, handler_name: str = "cmd",
+                 log_level=logger.G_LOG_LEVEL_DEBUG, is_persist=False):
         self._handler_name = handler_name
         self.logger = logger.get_logger(name=handler_name + "_cmd",
                                         log_file_level=log_level,
                                         is_persist=is_persist)
+
     def print_stdout_line(self, process: subprocess.Popen):
         '''
         print the stdout of a process
@@ -28,7 +30,7 @@ class CmdHandler():
         for line in process.stdout:
             print(line)
 
-    def run_shell(self, cmd: str="", timeout=0, is_dry_run=False, is_debug=False):
+    def run_shell(self, cmd: str = "", timeout=0, is_dry_run=False, is_debug=False):
         '''
         run a simple shell cmd, output its result
 
@@ -60,8 +62,8 @@ class CmdHandler():
         self.logger.info("run cmd: {}".format(
             common_tool.Color.set_text(cmd, common_tool.Color.BLUE)))
         process = subprocess.Popen(cmd, shell=True,
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE)
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE)
         if timeout != 0:
             # with timeout
             start_time = time.time()
