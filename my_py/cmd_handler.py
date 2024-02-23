@@ -3,9 +3,66 @@
 
 import subprocess
 import time
+import sys
+import select
+import fcntl
+import os
+import threading
+import errno
 
 from my_py import logger
 from my_py import common_tool
+
+
+def output_reader_thd(process: subprocess.Popen,
+                      stdout_buf: bytearray,
+                      stderr_buf: bytearray,
+                      is_verbose=False):
+    """thread of reading output
+
+    Args:
+        process (subprocess.Popen): input process
+        stdout_buf (bytearray): buffer of stdout
+        stderr_buf (bytearray): buffer of stderr
+
+    Returns:
+        None
+    """
+    while True:
+        ready_list, _, _ = select.select([process.stdout, process.stderr],
+                                         [], [], 0)
+        if (process.stdout in ready_list):
+            line = process.stdout.readline()
+            if (line):
+                if (is_verbose):
+                    print(line.strip())
+                stdout_buf.extend("{}\n".format(line.strip()).encode(
+                    common_tool._g_encode_fmt))
+        if (process.stderr in ready_list):
+            line = process.stderr.readline()
+            if (line):
+                if (is_verbose):
+                    print(line.strip())
+                stderr_buf.extend("{}\n".format(line.strip()).encode(
+                    common_tool._g_encode_fmt))
+        if process.poll() is not None:
+            break
+    return None
+
+
+def set_stdout_stderr_non_block(process: subprocess.Popen):
+        """set stdout and stderr of a process
+
+        Args:
+            process (subprocess.Popen): input process
+        """
+        stdout_fd = process.stdout.fileno()
+        stderr_fd = process.stderr.fileno()
+        stdout_flags = fcntl.fcntl(stdout_fd, fcntl.F_GETFL)
+        stderr_flags = fcntl.fcntl(stderr_fd, fcntl.F_GETFL)
+        fcntl.fcntl(stdout_fd, fcntl.F_SETFL, stdout_flags | os.O_NONBLOCK)
+        fcntl.fcntl(stderr_fd, fcntl.F_SETFL, stderr_flags | os.O_NONBLOCK)
+        return None
 
 
 class CmdHandler():
@@ -16,40 +73,25 @@ class CmdHandler():
                                         log_file_level=log_level,
                                         is_persist=is_persist)
 
-    def print_stdout_line(self, process: subprocess.Popen):
-        '''
-        print the stdout of a process
+    def run_shell(self, cmd: str, timeout=0,
+                  is_dry_run=False,
+                  is_debug=False,
+                  is_verbose=False):
+        """run a shell command
 
         Args:
-            process:
-                subprocess.Popen
+            cmd (str): shell command
+            timeout (int, optional): timeout val, > timeout, exit. Defaults to 0.
+            is_dry_run (bool, optional): only print command. Defaults to False.
+            is_debug (bool, optional): print the output command after. Defaults to False.
+            is_verbose (bool, optional): print output in real time. Defaults to False.
 
         Returns:
-            None
-        '''
-        for line in process.stdout:
-            print(line)
-
-    def run_shell(self, cmd: str = "", timeout=0, is_dry_run=False, is_debug=False):
-        '''
-        run a simple shell cmd, output its result
-
-        Args:
-            cmd:
-                the cmd to execute
-            timeout:
-                the timeout, exceeds this will raise TimeoutError()
-            is_dry_run:
-                only print the cmd without real execution
-
-        Returns:
-            output:
-                stdout output of the cmd
-            error_output:
-                stderr output of the cmd
-            returncode:
-                return code of the cmd
-        '''
+            stdout_buf: stdout buffer
+            stderr_buf: stderr buffer
+            ret_code: return code
+        """
+        local_is_verbose = is_verbose
         if is_dry_run:
             self.logger.info("DRY_RUN: {}".format(
                 common_tool.Color.set_text(cmd, common_tool.Color.BLUE)))
@@ -59,31 +101,46 @@ class CmdHandler():
             self.logger.error("timeout is invalid")
             return None, None, -1
 
+        if timeout > 0:
+            local_is_verbose = True
+
         self.logger.info("run cmd: {}".format(
             common_tool.Color.set_text(cmd, common_tool.Color.BLUE)))
         process = subprocess.Popen(cmd, shell=True,
                                    stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE)
-        if timeout != 0:
-            # with timeout
+                                   stderr=subprocess.PIPE,
+                                   universal_newlines=True)
+        set_stdout_stderr_non_block(process)
+        stdout_buf = bytearray()
+        stderr_buf = bytearray()
+        output_reader = threading.Thread(target=output_reader_thd, args=(
+            process, stdout_buf, stderr_buf, local_is_verbose
+        ))
+        output_reader.start()
+
+        if timeout > 0:
+            # with timeout, set is_verbose to True
             start_time = time.time()
             while process.poll() is None:
                 elapsed_time = time.time() - start_time
-                self.print_stdout_line(process=process)
                 if elapsed_time > timeout:
                     process.terminate()
                     process.wait()
+                    output_reader.join()
                     self.logger.error("command execution timed out")
-                    raise TimeoutError()
+                    return None, None, errno.ETIMEDOUT
                 time.sleep(0.1)
 
-        # check return code
-        output, error_output = process.communicate()
-        if process.returncode == 0:
-            if (is_debug and len(output.decode("utf-8")) != 0):
+        # wait shell finishing
+        ret_code = process.wait()
+        output_reader.join()
+
+        if ret_code == 0:
+            if (is_debug and
+                len(stdout_buf.decode(common_tool._g_encode_fmt).strip()) != 0):
                 self.logger.info("run successful: {}\noutput: {}".format(
                     common_tool.Color.set_text(cmd, common_tool.Color.BLUE),
-                    output.decode("utf-8")))
+                    stdout_buf.decode(common_tool._g_encode_fmt).strip()))
             else:
                 self.logger.info("run successful: {}".format(
                     common_tool.Color.set_text(cmd, common_tool.Color.BLUE)))
@@ -91,7 +148,9 @@ class CmdHandler():
             # if error, print the error info
             self.logger.error("run failed: {}\nerror: {}\nret: {}".format(
                 common_tool.Color.set_text(cmd, common_tool.Color.BLUE),
-                error_output.decode("utf-8"),
-                process.returncode))
+                stderr_buf.decode(common_tool._g_encode_fmt).strip(),
+                ret_code))
 
-        return output.decode("utf-8"), error_output.decode("utf-8"), process.returncode
+        return (stdout_buf.decode(common_tool._g_encode_fmt).strip(),
+                stderr_buf.decode(common_tool._g_encode_fmt).strip(),
+                ret_code)

@@ -13,6 +13,3 @@ def init_dry_run_debug_flag(is_dry_run: bool, is_debug: bool):
 
     crypto_tool._g_is_dry_run = is_dry_run
     crypto_tool._g_is_debug = is_debug
-
-    common_tool._g_is_dry_run = is_dry_run
-    common_tool._g_is_debug = is_debug

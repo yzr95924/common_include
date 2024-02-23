@@ -7,11 +7,7 @@ common tool library (native python3 lib)
 from my_py import logger
 
 _g_mod_name = "common_tool"
-_g_logger = logger.get_logger(name=_g_mod_name)
-
-_g_is_dry_run = False
-_g_is_debug = False
-
+_g_encode_fmt = "utf-8"
 
 class Color:
     # 字符串颜色
