@@ -4,6 +4,7 @@ native os-related util
 
 import os
 import errno
+import socket
 
 from my_py import cmd_handler
 from my_py import logger
@@ -79,6 +80,18 @@ def translate_linux_err_code(err_code: int):
         return "{}:{}".format(err_code, os.strerror(err_code))
     else:
         return "not standard linux err code: {}".format(err_code)
+
+
+class Network:
+    def get_ip_address():
+        """get ip address
+
+        Returns:
+            ip_address: ip address in string
+        """
+        hostname = socket.gethostname()
+        ip_address = socket.gethostbyname(hostname)
+        return ip_address
 
 
 class FS:
