@@ -121,8 +121,11 @@ class FS:
                                              is_debug=_g_is_debug)
         return ret
 
-    def mkdir_p(path: str):
-        cmd = "mkdir -p" + " " + path
+    def mkdir_p(path: str, is_root=False):
+        if (is_root):
+            cmd = "sudo mkdir -p" + " " + path
+        else:
+            cmd = "mkdir -p" + " " + path
         _, _, ret = _g_cmd_handler.run_shell(cmd=cmd,
                                              is_dry_run=_g_is_dry_run,
                                              is_debug=_g_is_debug)
@@ -179,3 +182,9 @@ class FS:
             ))
             return ret
         return ret
+
+    def is_folder_mount(mount_point: str):
+        if (os.path.ismount(mount_point)):
+            return True
+        else:
+            return False
