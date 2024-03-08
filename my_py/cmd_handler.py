@@ -3,7 +3,6 @@
 
 import subprocess
 import time
-import sys
 import select
 import fcntl
 import os
@@ -72,6 +71,7 @@ class CmdHandler():
         self.logger = logger.get_logger(name=handler_name + "_cmd",
                                         log_file_level=log_level,
                                         is_persist=is_persist)
+        self.print_lock = threading.Lock()
 
     def run_shell(self, cmd: str, timeout=0,
                   is_dry_run=False,
@@ -135,6 +135,7 @@ class CmdHandler():
         ret_code = process.wait()
         output_reader.join()
 
+        self.print_lock.acquire()
         if ret_code == 0:
             if (is_debug and
                 len(stdout_buf.decode(common_tool._g_encode_fmt).strip()) != 0):
@@ -150,6 +151,7 @@ class CmdHandler():
                 common_tool.Color.set_text(cmd, common_tool.Color.BLUE),
                 stderr_buf.decode(common_tool._g_encode_fmt).strip(),
                 ret_code))
+        self.print_lock.release()
 
         return (stdout_buf.decode(common_tool._g_encode_fmt).strip(),
                 stderr_buf.decode(common_tool._g_encode_fmt).strip(),

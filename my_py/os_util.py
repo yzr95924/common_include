@@ -5,6 +5,7 @@ native os-related util
 import os
 import errno
 import socket
+from threading import Thread
 
 from my_py import cmd_handler
 from my_py import logger
@@ -188,3 +189,13 @@ class FS:
             return True
         else:
             return False
+
+
+class ThreadWithRet(Thread):
+    def run(self):
+        if self._target is not None:
+            self._return = self._target(*self._args, **self._kwargs)
+
+    def join(self):
+        super().join()
+        return self._return
