@@ -147,10 +147,15 @@ class CmdHandler():
                     common_tool.Color.set_text(cmd, common_tool.Color.BLUE)))
         else:
             # if error, print the error info
-            self.logger.error("run failed: {}\nerror: {}\nret: {}".format(
-                common_tool.Color.set_text(cmd, common_tool.Color.BLUE),
-                stderr_buf.decode(common_tool._g_encode_fmt).strip(),
-                ret_code))
+            if (len(stderr_buf.decode(common_tool._g_encode_fmt).strip()) == 0):
+                self.logger.error("run failed: {}\nret: {}".format(
+                    common_tool.Color.set_text(cmd, common_tool.Color.BLUE),
+                    ret_code))
+            else:
+                self.logger.error("run failed: {}\nerror: {}\nret: {}".format(
+                    common_tool.Color.set_text(cmd, common_tool.Color.BLUE),
+                    stderr_buf.decode(common_tool._g_encode_fmt).strip(),
+                    ret_code))
         self.print_lock.release()
 
         return (stdout_buf.decode(common_tool._g_encode_fmt).strip(),

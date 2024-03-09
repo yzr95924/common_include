@@ -5,6 +5,8 @@ native os-related util
 import os
 import errno
 import socket
+import json
+import sys
 from threading import Thread
 
 from my_py import cmd_handler
@@ -199,3 +201,35 @@ class ThreadWithRet(Thread):
     def join(self):
         super().join()
         return self._return
+
+
+class Config:
+    def load_json_config(config_path: str):
+        """load json config and return dict
+
+        Args:
+            config_path (str): path of config file
+
+        Returns:
+            json_data: json data in dict
+        """
+        json_data = {}
+        _g_logger.info("start to load json file: {}".format(config_path))
+        try:
+            with open(config_path, "r") as json_file:
+                json_data = json.load(json_file)
+        except FileNotFoundError:
+            _g_logger.error("json file not found: {}".format(config_path))
+            sys.exit(errno.EEXIST)
+        except PermissionError:
+            _g_logger.error("json file permission error: {}".format(config_path))
+            sys.exit(errno.EPERM)
+        except json.JSONDecoder:
+            _g_logger.error("json file decode failed: {}".format(config_path))
+            sys.exit(errno.EIO)
+        except Exception as e:
+            _g_logger.error("load json file with exception: {}".format(str(e)))
+            sys.exit(errno.EIO)
+
+        _g_logger.info("load json file done: {}".format(config_path))
+        return json_data
