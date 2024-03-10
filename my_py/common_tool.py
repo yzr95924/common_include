@@ -8,6 +8,7 @@ from my_py import logger
 
 _g_mod_name = "common_tool"
 _g_encode_fmt = "utf-8"
+RETURN_OK = 0
 
 class Color:
     # 字符串颜色
