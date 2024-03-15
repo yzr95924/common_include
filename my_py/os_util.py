@@ -193,6 +193,15 @@ class FS:
             return False
 
 
+class Permission:
+    def is_current_root():
+        current_uid = os.getuid()
+        if (current_uid == 0):
+            return True
+        else:
+            return False
+
+
 class ThreadWithRet(Thread):
     def run(self):
         if self._target is not None:

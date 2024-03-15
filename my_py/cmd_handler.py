@@ -8,9 +8,52 @@ import fcntl
 import os
 import threading
 import errno
+import signal
+from typing import Dict
 
 from my_py import logger
 from my_py import common_tool
+
+_g_mod_name = "cmd_handler"
+_g_logger = logger.get_logger(name=_g_mod_name)
+_g_running_subprocess_map: Dict[str, subprocess.Popen]= {}
+_g_running_subprocess_map_lock = threading.Lock()
+_g_interrupt_enable = False
+_g_interrupt_lock = threading.Lock()
+
+
+def keyboard_interrupt_handler(signal, frame):
+    _g_logger.warning("receive ctrl+c interrupt, stop all running sub-process")
+    _g_running_subprocess_map_lock.acquire()
+    for cmd in list(_g_running_subprocess_map.keys()):
+        if (_g_running_subprocess_map[cmd].poll() is not None):
+            del _g_running_subprocess_map[cmd]
+        else:
+            _g_running_subprocess_map[cmd].terminate()
+            _g_logger.warning("terminate: {}".format(
+                common_tool.Color.set_text(cmd, common_tool.Color.BLUE)))
+            del _g_running_subprocess_map[cmd]
+    _g_running_subprocess_map_lock.release()
+
+
+def set_keyboard_interrupt():
+    global _g_interrupt_enable, _g_interrupt_lock
+    _g_interrupt_lock.acquire()
+    signal.signal(signal.SIGINT, keyboard_interrupt_handler)
+    _g_logger.info("set keyboard interrupt")
+    _g_interrupt_enable = True
+    _g_interrupt_lock.release()
+    return 0
+
+
+def remove_keyboard_interrupt():
+    global _g_interrupt_enable, _g_interrupt_lock
+    _g_interrupt_lock.acquire()
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+    _g_logger.info("remove keyboard interrupt")
+    _g_interrupt_enable = False
+    _g_interrupt_lock.release()
+    return 0
 
 
 def output_reader_thd(process: subprocess.Popen,
@@ -118,6 +161,10 @@ class CmdHandler():
         ))
         output_reader.start()
 
+        _g_running_subprocess_map_lock.acquire()
+        _g_running_subprocess_map[cmd] = process
+        _g_running_subprocess_map_lock.release()
+
         if timeout > 0:
             # with timeout, set is_verbose to True
             start_time = time.time()
@@ -134,6 +181,11 @@ class CmdHandler():
         # wait shell finishing
         ret_code = process.wait()
         output_reader.join()
+
+        _g_running_subprocess_map_lock.acquire()
+        if (cmd in _g_running_subprocess_map):
+            del _g_running_subprocess_map[cmd]
+        _g_running_subprocess_map_lock.release()
 
         self.print_lock.acquire()
         if ret_code == 0:
