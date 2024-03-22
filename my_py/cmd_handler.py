@@ -89,6 +89,7 @@ def output_reader_thd(process: subprocess.Popen,
                     common_tool._g_encode_fmt))
         if process.poll() is not None:
             break
+        time.sleep(1)
     return None
 
 
