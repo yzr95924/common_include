@@ -20,5 +20,5 @@ def test_func():
 if __name__ == "__main__":
     test_func()
     cmd_handler = cmd_handler.CmdHandler(handler_name="test")
-    cmd_handler.run_shell("ls", is_debug=True, is_verbose=True)
+    cmd_handler.run_shell("ls", is_debug=False, is_verbose=False)
     print(os_util.get_current_os_release())

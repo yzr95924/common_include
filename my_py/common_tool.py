@@ -4,6 +4,8 @@
 common tool library (native python3 lib)
 """
 
+import importlib
+
 from my_py import logger
 
 _g_mod_name = "common_tool"
@@ -24,3 +26,9 @@ class Color:
 
     def set_text(message: str, color_opt: str):
         return ("%s%s%s" % (color_opt, message, Color.RESET))
+
+def is_module_exist(module_name: str):
+    module_loader = importlib.find_loader(module_name)
+    if (module_loader is not None):
+        return True
+    return False

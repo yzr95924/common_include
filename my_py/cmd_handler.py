@@ -4,6 +4,7 @@
 import subprocess
 import time
 import select
+import selectors
 import fcntl
 import os
 import threading
@@ -70,28 +71,30 @@ def output_reader_thd(process: subprocess.Popen,
     Returns:
         None
     """
-    while True:
-        ready_list, _, _ = select.select([process.stdout, process.stderr],
-                                         [], [], 0)
-        if (process.stdout in ready_list):
-            line = process.stdout.readline()
-            if (line):
-                if (is_verbose):
-                    print(line.strip())
-                stdout_buf.extend("{}\n".format(line.strip()).encode(
-                    common_tool._g_encode_fmt))
-        if (process.stderr in ready_list):
-            line = process.stderr.readline()
-            if (line):
-                if (is_verbose):
-                    print(line.strip())
-                stderr_buf.extend("{}\n".format(line.strip()).encode(
-                    common_tool._g_encode_fmt))
-        if process.poll() is not None:
-            break
-        time.sleep(1)
-    return None
+    local_selector = selectors.DefaultSelector()
+    local_selector.register(process.stdout, selectors.EVENT_READ)
+    local_selector.register(process.stderr, selectors.EVENT_READ)
 
+    while True:
+        events = local_selector.select()
+        for key, _ in events:
+            if (key.fileobj == process.stdout):
+                data = process.stdout.read()
+                if (len(data.strip()) != 0):
+                    if (is_verbose):
+                        print(data.strip())
+                    stdout_buf.extend("{}".format(data.strip()).encode(
+                        common_tool._g_encode_fmt))
+            if (key.fileobj == process.stderr):
+                data = process.stderr.read()
+                if (len(data.strip()) != 0):
+                    if (is_verbose):
+                        print(data.strip())
+                    stderr_buf.extend("{}".format(data.strip()).encode(
+                        common_tool._g_encode_fmt))
+        if (process.poll() is not None):
+            break
+    return None
 
 def set_stdout_stderr_non_block(process: subprocess.Popen):
         """set stdout and stderr of a process
