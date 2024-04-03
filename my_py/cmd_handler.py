@@ -24,6 +24,12 @@ _g_interrupt_lock = threading.Lock()
 
 
 def keyboard_interrupt_handler(signal, frame):
+    """keyboard interrupt handler
+
+    Args:
+        signal (_type_): signal
+        frame (_type_): frame
+    """
     _g_logger.warning("receive ctrl+c interrupt, stop all running sub-process")
     _g_running_subprocess_map_lock.acquire()
     for cmd in list(_g_running_subprocess_map.keys()):
@@ -38,6 +44,11 @@ def keyboard_interrupt_handler(signal, frame):
 
 
 def set_keyboard_interrupt():
+    """set the keyboard interrupt handler
+
+    Returns:
+        ret_code: return code
+    """
     global _g_interrupt_enable, _g_interrupt_lock
     _g_interrupt_lock.acquire()
     signal.signal(signal.SIGINT, keyboard_interrupt_handler)
@@ -48,6 +59,11 @@ def set_keyboard_interrupt():
 
 
 def remove_keyboard_interrupt():
+    """remove keyboard interrupt handler
+
+    Returns:
+        ret_code: return code
+    """
     global _g_interrupt_enable, _g_interrupt_lock
     _g_interrupt_lock.acquire()
     signal.signal(signal.SIGINT, signal.SIG_DFL)

@@ -7,6 +7,7 @@ import errno
 import socket
 import json
 import sys
+import psutil
 from threading import Thread
 
 from my_py import cmd_handler
@@ -211,6 +212,27 @@ class ThreadWithRet(Thread):
         super().join()
         return self._return
 
+
+class ProcessStat:
+    def find_process_with_keyword(keyword: str, is_exact_match=False):
+        """find the pid with keyword
+
+        Args:
+            keyword (str): input keyword
+            is_exact_match (bool, optional): exact match the keyword. Defaults to False.
+
+        Returns:
+            pid_list: the pid of the input keyword
+        """
+        pid_list = []
+        for cur_process in psutil.process_iter():
+            if (is_exact_match):
+                if (keyword.lower() == cur_process.name()):
+                    pid_list.append(cur_process.pid)
+            else:
+                if (keyword.lower() in cur_process.name()):
+                    pid_list.append(cur_process.pid)
+        return pid_list
 
 class Config:
     def load_json_config(config_path: str):
