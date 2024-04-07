@@ -129,7 +129,15 @@ def set_stdout_stderr_non_block(process: subprocess.Popen):
 
 class CmdHandler():
     def __init__(self, handler_name: str = "cmd",
-                 log_level=logger.G_LOG_LEVEL_DEBUG, is_persist=False):
+                 log_level=logger.G_LOG_LEVEL_DEBUG,
+                 is_persist=False):
+        """init CmdHandler
+
+        Args:
+            handler_name (str, optional): handler name. Defaults to "cmd".
+            log_level (log_level, optional): log level. Defaults to logger.G_LOG_LEVEL_DEBUG.
+            is_persist (bool, optional): persist log or not. Defaults to False.
+        """
         self._handler_name = handler_name
         self.logger = logger.get_logger(name=handler_name + "_cmd",
                                         log_file_level=log_level,

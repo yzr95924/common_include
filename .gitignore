@@ -220,4 +220,4 @@ cython_debug/
 *.log*
 
 *__pycache__*
-test.py
+*test.py

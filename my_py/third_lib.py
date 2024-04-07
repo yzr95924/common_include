@@ -2,13 +2,40 @@
 # -*- coding: utf-8 -*-
 
 import paramiko
+import psutil
 import errno
 
 from my_py import logger
 from my_py import common_tool
 
-_g_mod_name = "ssh_client"
+_g_mod_name = "third_lib"
+_g_is_dry_run = False
+_g_is_debug = False
+
 _g_logger = logger.get_logger(name=_g_mod_name)
+
+
+class Util:
+    @staticmethod
+    def find_process_with_keyword(keyword: str, is_exact_match=False):
+        """find the pid with keyword
+
+        Args:
+            keyword (str): input keyword
+            is_exact_match (bool, optional): exact match the keyword. Defaults to False.
+
+        Returns:
+            pid_list: the pid of the input keyword
+        """
+        pid_list = []
+        for cur_process in psutil.process_iter():
+            if (is_exact_match):
+                if (keyword.lower() == cur_process.name()):
+                    pid_list.append(cur_process.pid)
+            else:
+                if (keyword.lower() in cur_process.name()):
+                    pid_list.append(cur_process.pid)
+        return pid_list
 
 class SSHCmd:
     def __init__(self, port: str, hostname: str, usr_name: str, pwd: str,

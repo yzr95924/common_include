@@ -22,3 +22,5 @@ if __name__ == "__main__":
     cmd_handler = cmd_handler.CmdHandler(handler_name="test")
     cmd_handler.run_shell("ls", is_debug=False, is_verbose=False)
     print(os_util.get_current_os_release())
+
+    os_util.FS.mkdir_p("~/")

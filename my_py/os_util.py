@@ -99,6 +99,7 @@ class Network:
 
 
 class FS:
+    @staticmethod
     def check_if_file_exist(path: str):
         '''
         check file exists
@@ -110,21 +111,14 @@ class FS:
             True: exist
             False: not exist
         '''
-        if (os.path.exists(path)):
+        expended_path = os.path.expanduser(path)
+        abs_path = os.path.abspath(expended_path)
+        if (os.path.exists(abs_path)):
             return True
         else:
             return False
 
-    def delete_file_if_exist(path: str):
-        if (not os.path.exists(path)):
-            return 0
-
-        cmd = "rm" + " " + path
-        _, _, ret = _g_cmd_handler.run_shell(cmd=cmd,
-                                             is_dry_run=_g_is_dry_run,
-                                             is_debug=_g_is_debug)
-        return ret
-
+    @staticmethod
     def mkdir_p(path: str, is_root=False):
         if (is_root):
             cmd = "sudo mkdir -p" + " " + path
@@ -135,6 +129,7 @@ class FS:
                                              is_debug=_g_is_debug)
         return ret
 
+    @staticmethod
     def change_file_mode(file_path: str, mode: str):
         '''
         change file mode
@@ -155,8 +150,9 @@ class FS:
             return ret
         return ret
 
+    @staticmethod
     def rm_file(file_path: str):
-        cmd = "rm" + " " + file_path
+        cmd = "rm" + " " + "-rf" + " " + file_path
         _, _, ret = _g_cmd_handler.run_shell(cmd=cmd,
                                              is_dry_run=_g_is_dry_run,
                                              is_debug=_g_is_debug)
@@ -168,6 +164,7 @@ class FS:
             return ret
         return ret
 
+    @staticmethod
     def write_str_to_file(input_data: str, file_path: str, is_append: bool):
         ret = 0
         if (is_append):
@@ -187,12 +184,16 @@ class FS:
             return ret
         return ret
 
+    @staticmethod
     def is_folder_mount(mount_point: str):
         if (os.path.ismount(mount_point)):
             return True
         else:
             return False
 
+    @staticmethod
+    def convert_to_abspath(path: str):
+        return os.path.abspath(os.path.expanduser(path))
 
 class Permission:
     def is_current_root():
@@ -211,28 +212,6 @@ class ThreadWithRet(Thread):
     def join(self):
         super().join()
         return self._return
-
-
-class ProcessStat:
-    def find_process_with_keyword(keyword: str, is_exact_match=False):
-        """find the pid with keyword
-
-        Args:
-            keyword (str): input keyword
-            is_exact_match (bool, optional): exact match the keyword. Defaults to False.
-
-        Returns:
-            pid_list: the pid of the input keyword
-        """
-        pid_list = []
-        for cur_process in psutil.process_iter():
-            if (is_exact_match):
-                if (keyword.lower() == cur_process.name()):
-                    pid_list.append(cur_process.pid)
-            else:
-                if (keyword.lower() in cur_process.name()):
-                    pid_list.append(cur_process.pid)
-        return pid_list
 
 class Config:
     def load_json_config(config_path: str):
