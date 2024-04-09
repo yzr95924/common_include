@@ -7,7 +7,6 @@ import errno
 import socket
 import json
 import sys
-import psutil
 from threading import Thread
 
 from my_py import cmd_handler

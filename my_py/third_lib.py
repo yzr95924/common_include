@@ -14,6 +14,9 @@ _g_is_debug = False
 
 _g_logger = logger.get_logger(name=_g_mod_name)
 
+def setup(is_dry_run: bool, is_debug: bool):
+    _g_is_dry_run = is_dry_run
+    _g_is_debug = is_debug
 
 class Util:
     @staticmethod
