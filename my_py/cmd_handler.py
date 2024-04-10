@@ -22,8 +22,10 @@ _g_running_subprocess_map_lock = threading.Lock()
 _g_interrupt_enable = False
 _g_interrupt_lock = threading.Lock()
 
+_g_terminate_timeout_second = 3
 
-def keyboard_interrupt_handler(signal, frame):
+
+def keyboard_interrupt_handler(cur_signal, frame):
     """keyboard interrupt handler
 
     Args:
@@ -36,10 +38,16 @@ def keyboard_interrupt_handler(signal, frame):
         if (_g_running_subprocess_map[cmd].poll() is not None):
             del _g_running_subprocess_map[cmd]
         else:
-            _g_running_subprocess_map[cmd].terminate()
-            _g_logger.warning("terminate: {}".format(
-                common_tool.Color.set_text(cmd, common_tool.Color.BLUE)))
-            del _g_running_subprocess_map[cmd]
+            try:
+                _g_logger.warning("terminate: {}".format(
+                    common_tool.Color.set_text(cmd, common_tool.Color.BLUE)))
+                _g_running_subprocess_map[cmd].terminate()
+                _g_running_subprocess_map[cmd].wait(timeout=_g_terminate_timeout_second)
+                del _g_running_subprocess_map[cmd]
+            except subprocess.TimeoutExpired:
+                _g_logger.warning("terminate time expired {}s, start to kill".format(
+                    _g_terminate_timeout_second))
+                _g_running_subprocess_map[cmd].kill()
     _g_running_subprocess_map_lock.release()
 
 

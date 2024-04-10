@@ -119,14 +119,24 @@ class FS:
 
     @staticmethod
     def mkdir_p(path: str, is_root=False):
+        """mkdir_p
+
+        Args:
+            path (str): dir path
+            is_root (bool, optional): need to use root?. Defaults to False.
+
+        Returns:
+            ret_code: return code, handle outside func
+        """
+        ret_code = 0
         if (is_root):
             cmd = "sudo mkdir -p" + " " + path
         else:
             cmd = "mkdir -p" + " " + path
-        _, _, ret = _g_cmd_handler.run_shell(cmd=cmd,
+        _, _, ret_code = _g_cmd_handler.run_shell(cmd=cmd,
                                              is_dry_run=_g_is_dry_run,
                                              is_debug=_g_is_debug)
-        return ret
+        return ret_code
 
     @staticmethod
     def change_file_mode(file_path: str, mode: str):
