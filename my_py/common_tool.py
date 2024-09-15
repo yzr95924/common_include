@@ -10,7 +10,10 @@ from my_py import logger
 
 _g_mod_name = "common_tool"
 _g_encode_fmt = "utf-8"
+
+# some common ERROR code
 RETURN_OK = 0
+RETURN_ERR = 1
 
 class Color:
     # 字符串颜色
